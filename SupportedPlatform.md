@@ -4,7 +4,7 @@
 - OpenStack
 - vSphere
 - vCloud
-- SoftLayer
+- [SoftLayer](http://bosh.io/docs/init-softlayer.html)
 - [Google Compute Engine](https://cloud.google.com/solutions/cloud-foundry-on-gcp)
 - RackHD
 - BOSH Lite
