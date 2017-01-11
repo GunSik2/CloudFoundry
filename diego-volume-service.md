@@ -10,6 +10,11 @@ To support volume service, CF add two new concepts:
 - Volume Mounts on Service Brokers
 - Volume Drivers on Diego Cells
 
+
+![create service](https://4.bp.blogspot.com/-HnIMqWFoMaM/WDm_6dyYpLI/AAAAAAAAa0I/nYysF_muLRQZuYRXp98V-Vd1sz1_eyGdwCLcB/s640/create-service.png)
+![bind service](https://1.bp.blogspot.com/-yQQUpm94Kqs/WDm_7ge9CYI/AAAAAAAAa0M/6yzCus4rCjw7IMUKa1INbibtEuyZzlz9ACLcB/s640/bind-service-1.png)
+
+
 ## Enabling Volume Services
 Volume Services are disabled in CF by default, several extra permissions must be requested by the Volume Service in order to issue volume mounts
 
