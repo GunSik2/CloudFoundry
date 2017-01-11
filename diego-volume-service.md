@@ -34,10 +34,16 @@ Drivers are deployed onto Diego Cells in one of two ways. Either they are deploy
   - BOSH Add-On Docs: http://bosh.io/docs/runtime-config.html#addons
 
 ## Example Volume Services
-
-
-
+- Bosh-Lite / Local Volume Service
+  - BOSH Release: https://github.com/cloudfoundry-incubator/local-volume-release
+- EMC Isilon Service
+  - Broker BOSH Release: https://github.com/EMC-Dojo/cf-persist-service-broker
+  - Driver BOSH Release: https://github.com/EMC-Dojo/rexray-boshrelease
+- Amazon EFS Service
+  - BOSH Release: https://github.com/cloudfoundry-incubator/efs-volume-release
+- CephFS Service
+  - BOSH Release: https://github.com/cloudfoundry-incubator/cephfs-bosh-release
+  
+  
 ## Reference
 - volume service: https://github.com/cloudfoundry-incubator/volman
-- ceph broker: https://github.com/cloudfoundry-incubator/cephbroker
-- aws efs broker: https://github.com/cloudfoundry-incubator/efs-volume-release
