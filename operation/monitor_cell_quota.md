@@ -1,4 +1,4 @@
-## Editing cf cell quota monitor
+##  cf cell quota monitor
 - curl http://cell-ip:1800/state
 - cell 의 사용량은 cpu    memory        disk 의 값은 cf push 시 요청한 값을 기준으로 산정
 - 참고 rep cell status
