@@ -37,6 +37,14 @@ cloudfoundry/bosh-lite (aws, 9000.137.0)
   
 - conclusion
   - bosh-lite 환경에서 garden-linux 는 vagrant box image 를 기반으로 하며 버전 호환성 필요
-
+  - v238 compatibility with bosh-lite (aws, 9000.137.0)
+```
+ver_cf=238
+ver_etcd=57
+ver_garden=0.342.0 #0.338.0
+ver_diego=0.1476.0
+ver_rootfs=1.16.0
+ver_stemcell=3147
+```
 ## reference
 - garden-linux & vagrant colerelation: https://github.com/cloudfoundry-attic/garden-linux/issues/53
