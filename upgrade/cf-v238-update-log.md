@@ -4,8 +4,9 @@
 - Sequential update works well.
 - For updting diego from v250 to v251, network configuration change is requried, because of duplication of subnet.
 - The garden_runc is first applied on cf v247, even though cf v246 added the garden_run but the yaml did use garden_linux.
+- The garden_linux all use 0.342.0, because the vagrant box applied latest version(aws, 9000.137.0) and its dependency on garden_linux.
 ```
-ver_cf=238; ver_etcd=57; ver_garden_linux=0.338.0; ver_garden_runc=; ver_diego=0.1476.0; ver_rootfs=1.16.0; ver_stemcell=3147
+ver_cf=238; ver_etcd=57; ver_garden_linux=0.342.0; ver_garden_runc=; ver_diego=0.1476.0; ver_rootfs=1.16.0; ver_stemcell=3147
 ver_cf=239; ver_etcd=60; ver_garden_linux=0.342.0; ver_garden_runc=; ver_diego=0.1480.0; ver_rootfs=1.18.0; ver_stemcell=3262.2
 ver_cf=240; ver_etcd=63; ver_garden_linux=0.342.0; ver_garden_runc=; ver_diego=0.1481.0; ver_rootfs=1.21.0; ver_stemcell=3262.2
 ver_cf=241; ver_etcd=66; ver_garden_linux=0.342.0; ver_garden_runc=; ver_diego=0.1483.0; ver_rootfs=1.27.0; ver_stemcell=3262.2
@@ -22,3 +23,8 @@ ver_cf=251; ver_etcd=87; ver_garden_linux=; ver_garden_runc=1.1.1; ver_diego=1.5
 ver_cf=252; ver_etcd=90; ver_garden_linux=; ver_garden_runc=1.1.1; ver_diego=1.6.2; ver_rootfs=1.48.0; ver_stemcell=3312.17
 ```
 
+- vagrant box 
+```
+$ vagrant box list
+cloudfoundry/bosh-lite (aws, 9000.137.0)
+```
