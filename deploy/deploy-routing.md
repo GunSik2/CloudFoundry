@@ -62,3 +62,4 @@ port=$(echo $appurl | cut -d':' -f2)
 
 ## Reference
 - https://github.com/cloudfoundry-incubator/routing-release
+- https://docs.cloudfoundry.org/adminguide/enabling-tcp-routing.html
