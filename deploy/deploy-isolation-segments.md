@@ -121,7 +121,7 @@ cf curl "/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f/relationshi
 cf curl "/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f/relationships/organizations" -X POST \
   -d '{
     "data": [
-      { "guid":"45a66ed9-cb76-46c3-92dd-b29187b50bfb" },
+      { "guid":"09e922a4-f16b-41ab-a047-7ecc01072b97" },
       { "guid":"d0540a63-3bec-42ff-abd9-8a30328ba296" }
     ]
   }' 
@@ -139,8 +139,8 @@ cf curl "/v3/isolation_segments/323f211e-fea3-4161-9bd1-615392327913/relationshi
 ```
 - Set a Default Isolation Segment for an Org
 ```
-cf curl "/v2/organizations/45a66ed9-cb76-46c3-92dd-b29187b50bfb" -X PUT \
-  -d '{ "default_isolation_segment_guid":"323f211e-fea3-4161-9bd1-615392327913"}'
+cf curl "/v2/organizations/09e922a4-f16b-41ab-a047-7ecc01072b97" -X PUT \
+  -d '{ "default_isolation_segment_guid":"5dd7843c-b36b-4eb4-a016-659478b2237f"}'
 ```
 - Add Spaces in an Isolation Segment
 ```
