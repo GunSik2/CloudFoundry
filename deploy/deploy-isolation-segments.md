@@ -110,15 +110,15 @@ cf curl "/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f" -X DELETE
 ## Manage Isolation Segment Relationships
 - List Orgs for an Isolation Segment
 ```
-cf curl "/v3/isolation_segments/323f211e-fea3-4161-9bd1-615392327913/relationships/organizations" -X GET 
+cf curl "/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f/relationships/organizations" -X GET 
 ```
 - List Spaces for an Isolation Segment
 ```
-cf curl "/v3/isolation_segments/323f211e-fea3-4161-9bd1-615392327913/relationships/spaces" -X GET 
+cf curl "/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f/relationships/spaces" -X GET 
 ```
 - Add Orgs to an Isolation Segment: Adds two orgs to an isolation segment
 ```
-cf curl "/v3/isolation_segments/323f211e-fea3-4161-9bd1-615392327913/relationships/organizations" -X POST \
+cf curl "/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f/relationships/organizations" -X POST \
   -d '{
     "data": [
       { "guid":"45a66ed9-cb76-46c3-92dd-b29187b50bfb" },
