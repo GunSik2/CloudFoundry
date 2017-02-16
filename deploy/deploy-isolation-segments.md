@@ -25,19 +25,86 @@ cf curl "/v3/isolation_segments" -X POST -d '{"name": "my_segment"}'
 ## Managing Isolation Segments
 - List Isolation Segments
 ```
-cf curl "/v3/isolation_segments" -X GET
+$ cf curl "/v3/isolation_segments" -X GET
+{
+   "pagination": {
+      "total_results": 2,
+      "total_pages": 1,
+      "first": {
+         "href": "https://api.v2.paasxpert.com/v3/isolation_segments?page=1&per_page=50"
+      },
+      "last": {
+         "href": "https://api.v2.paasxpert.com/v3/isolation_segments?page=1&per_page=50"
+      },
+      "next": null,
+      "previous": null
+   },
+   "resources": [
+      {
+         "guid": "933b4c58-120b-499a-b85d-4b6fc9e2903b",
+         "name": "shared",
+         "created_at": "2017-02-16T06:43:37Z",
+         "updated_at": "2017-02-16T06:43:37Z",
+         "links": {
+            "self": {
+               "href": "https://api.v2.paasxpert.com/v3/isolation_segments/933b4c58-120b-499a-b85d-4b6fc9e2903b"
+            },
+            "organizations": {
+               "href": "https://api.v2.paasxpert.com/v3/isolation_segments/933b4c58-120b-499a-b85d-4b6fc9e2903b/organizations"
+            },
+            "spaces": {
+               "href": "https://api.v2.paasxpert.com/v3/isolation_segments/933b4c58-120b-499a-b85d-4b6fc9e2903b/relationships/spaces"
+            }
+         }
+      },
+      {
+         "guid": "5dd7843c-b36b-4eb4-a016-659478b2237f",
+         "name": "my_segment",
+         "created_at": "2017-02-16T08:11:06Z",
+         "updated_at": "2017-02-16T08:11:06Z",
+         "links": {
+            "self": {
+               "href": "https://api.v2.paasxpert.com/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f"
+            },
+            "organizations": {
+               "href": "https://api.v2.paasxpert.com/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f/organizations"
+            },
+            "spaces": {
+               "href": "https://api.v2.paasxpert.com/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f/relationships/spaces"
+            }
+         }
+      }
+   ]
+}
 ```
 - Retrieve an Isolation Segment
 ```
-cf curl "/v3/isolation_segments/323f211e-fea3-4161-9bd1-615392327913" -X GET 
+$ cf curl "/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f" -X GET 
+{
+   "guid": "5dd7843c-b36b-4eb4-a016-659478b2237f",
+   "name": "my_segment",
+   "created_at": "2017-02-16T08:11:06Z",
+   "updated_at": "2017-02-16T08:11:06Z",
+   "links": {
+      "self": {
+         "href": "https://api.v2.paasxpert.com/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f"
+      },
+      "organizations": {
+         "href": "https://api.v2.paasxpert.com/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f/organizations"
+      },
+      "spaces": {
+         "href": "https://api.v2.paasxpert.com/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f/relationships/spaces"
+      }
+   }
+}
 ```
 - Renames the isolation segment
 ```
-cf curl "/v3/isolation_segments/323f211e-fea3-4161-9bd1-615392327913" -X PUT -d '{"name": "my_isolation_segment"}'
+cf curl "/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f" -X PUT -d '{"name": "my_isolation_segment"}'
 ```
 - Delete an Isolation Segment
 ```
-cf curl "/v3/isolation_segments/323f211e-fea3-4161-9bd1-615392327913" -X DELETE 
+cf curl "/v3/isolation_segments/5dd7843c-b36b-4eb4-a016-659478b2237f" -X DELETE 
 ```
 
 ## Manage Isolation Segment Relationships
