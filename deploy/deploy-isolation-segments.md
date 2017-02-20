@@ -158,3 +158,4 @@ cf curl "/v2/spaces/68d54d31-9b3a-463b-ba94-e8e4c32edbac" -X PUT \
 - https://github.com/cloudfoundry-community/cf-docs-contrib/wiki/Design-Documents
 - https://github.com/cloudfoundry/capi-release/releases/tag/1.21.0
 - https://docs.cloudfoundry.org/concepts/security.html
+- http://v3-apidocs.cloudfoundry.org/version/3.0.0/index.html#isolation-segments
