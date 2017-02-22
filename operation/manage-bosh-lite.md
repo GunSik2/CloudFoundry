@@ -29,3 +29,4 @@ $ sudo iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 2222 -j DNAT --to-de
 ## Reference
 - run concourse on bosh-lite: http://www.starkandwayne.com/blog/run-concourse-on-bosh-lite-on-aws/
 - run cf on bosh-: http://pythonhackers.com/p/michaelklishin/bosh-lite
+- bosh-lite: https://devhub.io/zh/repos/andypiper-bosh-lite
