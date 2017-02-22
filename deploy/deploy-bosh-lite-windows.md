@@ -36,7 +36,7 @@ $ make_bosh_lite_v238.sh start
 ```
 $ git clone https://github.com/cloudfoundry/bosh-lite
 ```
-- Customize memory & cpu
+- Customize memory/memory/bridged network
 ```
 $ cd bosh-lite
 $ vi Vagrantfile
@@ -44,7 +44,9 @@ $ vi Vagrantfile
     override.vm.box_version = '9000.137.0' # ci:replace
     v.customize ["modifyvm", :id, "--memory", 96000]
     v.customize ["modifyvm", :id, "--cpus", 10]
+    override.vm.network :public_network, bridge: 'en0: Ethernet 1', ip: '10.10.10.15', subnet: '255.255.255.0'    
 ```
+
 - Start bosh-lite
 ```
 $ vagrant up
