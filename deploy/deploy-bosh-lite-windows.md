@@ -7,9 +7,10 @@ Bosh-lite vm will run microbosh and cf/diego.
 
 In general virtualbox image size is increased when we deploy multiple times. 
 To minimize the image size, we will create and mount shared host folders:
-- inception-tmp : /tmp
-- inception-bosh : /home/vagrant/.bosh
-- inception-workspace : /home/vagrant/workspace
+
+```
+mkdir /vagrant/.bosh; ln -s /vagrant/.bosh .
+```
 
 ### inception deployment
 - create inception
@@ -26,7 +27,6 @@ $ vagrant ssh
 ```
 $ make_bosh_lite_v238.sh install
 $ make_bosh_lite_v238.sh start
-
 ```
 
 
@@ -49,3 +49,7 @@ $ vi Vagrantfile
 ```
 $ vagrant up
 ```
+
+
+### Reference
+- https://willplatnick.com/compacting-shrinking-a-virtualbox-image-when-using-vagrant-8a67af40417#.qwgt92gip
