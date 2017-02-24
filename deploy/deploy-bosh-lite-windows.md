@@ -51,7 +51,11 @@ $ vi Vagrantfile
 ```
 $ vagrant up
 ```
-
+#### bosh-lite access
+- manual ssh tunneling @host
+```
+ssh -L 80:127.0.0.1:80 vagrant@127.0.0.1 -p 2222
+```
 
 ### Reference
 - https://willplatnick.com/compacting-shrinking-a-virtualbox-image-when-using-vagrant-8a67af40417#.qwgt92gip
