@@ -57,3 +57,4 @@ $ vagrant up
 - https://willplatnick.com/compacting-shrinking-a-virtualbox-image-when-using-vagrant-8a67af40417#.qwgt92gip
 - http://software.danielwatrous.com/explore-cloudfoundry-using-bosh-lite-on-windows/
 - http://superuser.com/questions/752954/need-to-do-bridged-adapter-only-in-vagrant-no-nat
+- http://serverfault.com/questions/418422/public-static-ip-for-vagrant-box
