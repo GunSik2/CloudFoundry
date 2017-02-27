@@ -12,6 +12,29 @@ To minimize the image size, we will create and mount shared host folders:
 mkdir /vagrant/.bosh; ln -s /vagrant/.bosh .
 ```
 
+
+
+### bosh-lite start
+- clone bosh-lite 
+```
+$ git clone https://github.com/cloudfoundry/bosh-lite
+```
+- Customize memory/memory/bridged network if necessary.
+```
+$ cd bosh-lite
+$ vi Vagrantfile
+  config.vm.provider :virtualbox do |v, override|
+    override.vm.box_version = '9000.137.0' # ci:replace
+    v.customize ["modifyvm", :id, "--memory", 96000]
+    v.customize ["modifyvm", :id, "--cpus", 10]
+    override.vm.network :public_network, bridge: 'en0: Ethernet 1', ip: '10.10.10.15', subnet: '255.255.255.0'    
+```
+
+- Start bosh-lite
+```
+$ vagrant up
+```
+
 ### inception deployment
 - create inception
 ```
@@ -29,29 +52,13 @@ $ make_bosh_lite_v238.sh install
 $ make_bosh_lite_v238.sh start
 ```
 
-
-
-### bosh-lite start
-- clone bosh-lite 
-```
-$ git clone https://github.com/cloudfoundry/bosh-lite
-```
-- Customize memory/memory/bridged network
-```
-$ cd bosh-lite
-$ vi Vagrantfile
-  config.vm.provider :virtualbox do |v, override|
-    override.vm.box_version = '9000.137.0' # ci:replace
-    v.customize ["modifyvm", :id, "--memory", 96000]
-    v.customize ["modifyvm", :id, "--cpus", 10]
-    override.vm.network :public_network, bridge: 'en0: Ethernet 1', ip: '10.10.10.15', subnet: '255.255.255.0'    
-```
-
-- Start bosh-lite
-```
-$ vagrant up
-```
 #### bosh-lite access
+- add route @bosh-lite
+```
+cd bosh-lite/bin
+add-route
+```
+
 - manual ssh tunneling @host
 ```
 ssh -L 80:127.0.0.1:80 vagrant@127.0.0.1 -p 2222
