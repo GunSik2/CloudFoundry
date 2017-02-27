@@ -48,8 +48,8 @@ $ vagrant ssh
 
 - configure run script: 
 ```
-$ make_bosh_lite_v238.sh install
-$ make_bosh_lite_v238.sh start
+$ make_bosh_lite.sh prepare
+$ make_bosh_lite.sh deploy
 ```
 
 #### bosh-lite access
