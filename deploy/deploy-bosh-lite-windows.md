@@ -53,10 +53,9 @@ $ make_bosh_lite_v238.sh start
 ```
 
 #### bosh-lite access
-- add route @bosh-lite
+- add route @bosh-lite (bosh-lite/bin/add-route)
 ```
-cd bosh-lite/bin
-add-route
+route add 10.244.0.0/19 192.168.50.4
 ```
 
 - manual ssh tunneling @host
