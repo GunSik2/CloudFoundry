@@ -1,9 +1,10 @@
 
-- Base spring mvc3 application
+## Base spring mvc3 application
 ```
 git clone https://github.com/mkyong/spring3-mvc-maven-xml-hello-world
 ```
 
+## Push base spring mv3 application
 - Add manifiest file for cf push
   - We assumed mysql database instance is alread created in CF, named 'my-mysql-db'
 ```
@@ -162,4 +163,8 @@ public class ParseUtil {
 	    }
 	    
 }
+```
+- Push again and test
+```
+cf push
 ```
