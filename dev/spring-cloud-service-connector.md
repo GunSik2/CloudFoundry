@@ -169,3 +169,6 @@ public class ParseUtil {
 cf push
 ```
 - Final Source: https://github.com/CrossentCloud/PaaSXpert-Tutorial
+
+## Reference
+- https://docs.cloudfoundry.org/buildpacks/java/spring-service-bindings.html
