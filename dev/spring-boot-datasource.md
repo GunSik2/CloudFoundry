@@ -62,6 +62,7 @@ applications:
   buildpack: java_buildpack
 
 ```
+- Full Source: https://github.com/CrossentCloud/PaaSXpert-Tutorial
 
 ## Reference
 - https://github.com/cloudfoundry-samples/hello-spring-cloud
