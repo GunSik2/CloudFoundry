@@ -182,14 +182,6 @@ function install_bosh_cli() {
     gem install bosh_cli --no-ri --no-rdoc
 }
 
-function download_stemcell() {
-    wget https://s3.amazonaws.com/bosh-core-stemcells/warden/${stemcell_bosh_lite}.tgz
-}
-
-function upload_stemcell() {
-    bosh upload stemcell ${stemcell_bosh_lite}.tgz
-}
-
 function download_cf() {
     mkdir ~/workspace; cd ~/workspace
     git clone https://github.com/cloudfoundry/cf-release
