@@ -13,7 +13,6 @@ ver_ruby=2.3.0
 ver_golang=1.6.1
 ver_vagrant=1.9.1
 
-stemcell_bosh_lite=bosh-stemcell-${ver_stemcell}-warden-boshlite-ubuntu-trusty-go_agent
 domain=bosh-lite.com
 
 homepath=~/bin/
@@ -49,7 +48,6 @@ function main() {
 }
 
 function clean_all() {
-    rm -f ${stemcell_bosh_lite}.tgz
     rm -f go${ver_golang}.linux-amd64.tar.gz
     rm -f vagrant_${ver_vagrant}_x86_64.deb
     rm -rf bosh-lite
@@ -71,7 +69,6 @@ function install_all() {
     install_spiff
     install_cf_cli
 
-    download_stemcell
     download_cf
     download_diego
 }
@@ -99,6 +96,9 @@ function set_alias() {
     echo "alias bosh-ssh='bosh ssh --gateway_identity_file=$BOSH_LITE_PRIVATE_KEY --gateway_host=$pubadd --gateway_user=ubuntu --strict_host_key_checking=no"  >> ~/.bash_profile
 }
 
+function upload_stemcell() {
+    bosh upload stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent?v=${ver_stemcell}
+}
 
 function install_vagrant() {
     wget https://releases.hashicorp.com/vagrant/${ver_vagrant}/vagrant_${ver_vagrant}_x86_64.deb
