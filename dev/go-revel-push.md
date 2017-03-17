@@ -5,7 +5,7 @@
 ```
 mkdir goapp; cd goapp
 echo "export GOPATH=$(pwd)" > .env 
-echo "export PATH=$PATH:$GOPATH/bin" > .env
+echo "export PATH=$PATH:$GOPATH/bin" >> .env
 mkdir src/goapp/; cd src/goapp
 ```
 - Create test app
