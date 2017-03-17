@@ -1,23 +1,24 @@
 ## How to push Go Revel framework to CloudFoundry
 
-- Use godep
-- Use 
+- Test Revel App  
 ```
-export GOPATH="/home/me/gostuff"
-cd $GOPATH
+mkdir revel; cd revel
+echo "export GOPATH=$(pwd)" > .env 
+echo "export PATH=$PATH:$GOPATH/bin" > .env
+. .env
 go get github.com/revel/revel
-export PATH="$PATH:$GOPATH/bin"
-
 revel new myapp
 revel run myapp
+
 cd src/myapp/
 curl http://localhost:9000
 ```
+
+- Package using godep
 ```
-cd $GOPATH/src/myapp
+cd src/myapp
 godep save ./app
 
 cd Godeps/_workspace/src/github.com/revel/modules/testrunner
 ls
-# There is no `routes` directory, only `app`.
 ```
