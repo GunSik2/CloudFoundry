@@ -20,6 +20,9 @@ PCF provides three services from Neflix OSS.
 - Service Registry, powered by the battle-tested NetflixOSS [Eureka server](https://github.com/Netflix/eureka/wiki).
 - Circuit Breaker Dashboard, powered by the combination of NetflixOSS [Turbine](https://github.com/Netflix/Turbine/wiki) and [Hystrix](https://github.com/Netflix/Hystrix/wiki).
 
+[Amalgam8](https://www.amalgam8.io/docs/)
+
+
 ## Reference
 - [microservices.io](http://microservices.io/index.html)
 - [Netflix OSS](https://netflix.github.io/)
