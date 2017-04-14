@@ -19,8 +19,8 @@ PCF provides three services from Neflix OSS.
 - [Config Server]((http://docs.pivotal.io/spring-cloud-services/1-3/common/config-server/index.html)), powered by [Spring Cloud Config](http://cloud.spring.io/spring-cloud-config/), and backed by a customer-provided Git or SVN repository.
 - Service Registry, powered by the battle-tested NetflixOSS [Eureka server](https://github.com/Netflix/eureka/wiki).
 - Circuit Breaker Dashboard, powered by the combination of NetflixOSS [Turbine](https://github.com/Netflix/Turbine/wiki) and [Hystrix](https://github.com/Netflix/Hystrix/wiki).
-
-[Amalgam8](https://www.amalgam8.io/docs/)
+- [MSA Dashboard](https://github.com/ordina-jworks/microservices-dashboard)
+- [Amalgam8](https://www.amalgam8.io/docs/)
 
 
 ## Reference
