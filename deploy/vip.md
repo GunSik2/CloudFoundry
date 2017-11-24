@@ -19,6 +19,11 @@ net.ipv4.ip_nonlocal_bind=1
 
 $ sudo sysctl -p
 ```
+- Add VIP on eth port in OpenStack Horizon
+```
+프로젝트 > 네트워크 > 네트워크 > 허용된 주소 쌍 > 허용된 주소 쌍 추가
+```
+
 - create mysql user for service check 
 ```
 $ mysql -u root -p
