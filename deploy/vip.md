@@ -10,8 +10,21 @@ sudo apt-get install haproxy -y
 
 sudo apt-get install mysql-client -y
 sudo apt-get install keepalived -y
+sudo apt-get install mysql-client -y
 ```
+- Linux kernel option for vip
+```
+$ sudo vi /etc/sysctl.conf
+net.ipv4.ip_nonlocal_bind=1
 
+$ sudo sysctl -p
+```
+- create mysql user for service check 
+```
+$ mysql -u root -p
+> USE mysql;
+> CREATE USER 'haproxytest'@'%';
+```
 - haproxy.cfg
 ```
 global
