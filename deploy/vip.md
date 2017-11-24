@@ -165,4 +165,5 @@ vrrp_instance VI_1 {
 - Test
 ```
 sudo tcpdump -i ens3 vrrp
+mysql -h vip -u haproxytest  -e "SHOW DATABASES"
 ```
