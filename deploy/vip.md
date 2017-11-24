@@ -1,5 +1,17 @@
 # VIP Service using keepalived and haproxy
 
+- Install
+```
+sudo add-apt-repository ppa:vbernat/haproxy-1.5
+sudo apt-get update
+sudo apt-get dist-upgrade -y
+sudo apt-get install haproxy -y
+
+
+sudo apt-get install mysql-client -y
+sudo apt-get install keepalived -y
+```
+
 - haproxy.cfg
 ```
 global
