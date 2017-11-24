@@ -1,6 +1,6 @@
 # VIP Service using keepalived and haproxy
 - Architecture
-![https://user-images.githubusercontent.com/11453229/33203403-37ef5b84-d143-11e7-811d-d52f38b2f57a.png]
+![](https://user-images.githubusercontent.com/11453229/33203403-37ef5b84-d143-11e7-811d-d52f38b2f57a.png)
 
 - Install
 ```
