@@ -1,5 +1,9 @@
 # PostgreSQL + PGPool
 
+## Env
+- Master (172.17.3.9) accepts connections from the client with read and write permissions
+- Slave (172.17.3.12) the standby server runs a copy of the data from the master server with read-only permission.
+
 ## Install PostgreSQL Master/Slave
 - Install
 ```
@@ -67,9 +71,6 @@ sudo systemctl restart postgresql
 ```
 sudo su - postgres
 psql
-psql (9.5.10)
-Type "help" for help.
-
 # CREATE USER replica REPLICATION LOGIN ENCRYPTED PASSWORD 'koscom!234';
 CREATE ROLE
 # \du
@@ -82,8 +83,43 @@ CREATE ROLE
 
 ## Configure Slave Server
 
+- /etc/postgresql/9.5/main/postgresql.conf
+```
+listen_addresses = '*'
+#----------------------------
+# WRITE AHEAD LOG
+#---------------------------
+wal_level = hot_standby
+synchronous_commit = local
+
+
+
+#------------------------------------------------------------------------------
+# REPLICATION
+#------------------------------------------------------------------------------
+max_wal_senders = 2
+wal_keep_segments = 10
+synchronous_standby_names = 'pgslave001'
+hot_standby = on
+
+```
+## Master postgreSQL data 를 Salve 로 복제 
+- Slave login
+```
+sudo su - postgres
+cd 9.5
+mv main main-backup
+mkdir main; chmod 700 main
+pg_basebackup -h 172.17.3.9 -U replica -D /var/lib/postgresql/9.5/main -P --xlog
+
+cd /var/lib/postgresql/9.6/main/
+vim recovery.conf
+```
+
+
 ## Reference
 - [Google: Pgpool cluster](https://www.google.co.kr/search?q=pgtool+cluster&oq=pgtool+cluster&aqs=chrome..69i57j0l5.8079j0j7&sourceid=chrome&ie=UTF-8)
+- http://www.devopsdays.in/postgresql-replication-failover-recovery-ubuntu-16-04/
 - https://www.sraoss.co.jp/event_seminar/2016/pgpool-II-3.5.pdf
 - http://www.pgpool.net/docs/pgpool-II-3.7.0/doc/en/html/example-configs.html
 - hhttps://www.devmanuals.net/install/ubuntu/ubuntu-16-04-LTS-Xenial-Xerus/how-to-install-postgresql-9.5-pgpool2.html
