@@ -63,6 +63,23 @@ host    replication     postgres        172.17.3.12/32          md5
 sudo systemctl restart postgresql
 ```
 
+- Create replica user
+```
+sudo su - postgres
+psql
+psql (9.5.10)
+Type "help" for help.
+
+# CREATE USER replica REPLICATION LOGIN ENCRYPTED PASSWORD 'koscom!234';
+CREATE ROLE
+# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of
+-----------+------------------------------------------------------------+-----------
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ replica   | Replication                                                | {}
+```
+
 ## Configure Slave Server
 
 ## Reference
