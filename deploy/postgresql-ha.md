@@ -163,11 +163,11 @@ INSERT INTO replica_test VALUES ('pg replication by hakase-labs');
 ```
 - @Slave
 ```
-su - postgres
-psql
-select * from replica_test;
-INSERT INTO replica_test VALUES ('this is SLAVE');
-#ERROR
+$ su - postgres
+$ psql
+# select * from replica_test;
+# INSERT INTO replica_test VALUES ('this is SLAVE');
+ERROR:  cannot execute INSERT in a read-only transaction
 ```
 
 ## Reference
