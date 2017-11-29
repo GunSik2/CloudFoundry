@@ -120,6 +120,14 @@ $ chmod 600 /var/lib/postgresql/9.5/main/recovery.conf
 $ logout
 
 $ sudo systemctl start postgresql
+$ tail -f /var/log/postgresql/postgresql-9.5-main.log
+2017-11-29 21:00:07 KST [11242-3] LOG:  redo starts at 0/13000028
+2017-11-29 21:00:07 KST [11242-4] LOG:  consistent recovery state reached at 0/130000F8
+2017-11-29 21:00:07 KST [11241-1] LOG:  database system is ready to accept read only connections
+cp: cannot stat '/var/lib/postgresql/9.5/main/archive/000000010000000000000014': No such file or directory
+2017-11-29 21:00:08 KST [11250-1] LOG:  started streaming WAL from primary at 0/14000000 on timeline 1
+2017-11-29 21:00:08 KST [11251-1] [unknown]@[unknown] LOG:  incomplete startup packet
+
 $ netstat -plntu
 Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
@@ -132,10 +140,18 @@ tcp6       0      0 :::22                   :::*                    LISTEN      
 ## Testing
 - @Master: Check cluster status
 ```
-su - postgres
-psql -c "select application_name, state, sync_priority, sync_state from pg_stat_replication;"
-psql -x -c "select * from pg_stat_replication;"
+$ su - postgres
+$ psql -c "select application_name, state, sync_priority, sync_state from pg_stat_replication;"
+ application_name |   state   | sync_priority | sync_state
+------------------+-----------+---------------+------------
+ pgslave001       | streaming |             1 | sync
+
+$ psql -c "select application_name, state, sync_priority, sync_state from pg_stat_replication;"
+ application_name |   state   | sync_priority | sync_state
+------------------+-----------+---------------+------------
+ pgslave001       | streaming |             1 | sync
 ```
+
 - @Master: Create table 
 ```
 su - postgres
