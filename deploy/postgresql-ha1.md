@@ -173,6 +173,8 @@ $ psql
 ERROR:  cannot execute INSERT in a read-only transaction
 ```
 
+## [Go to 2nd chapter](postgresql-ha2.md)
+
 ## Reference
 - [Google: Pgpool cluster](https://www.google.co.kr/search?q=pgtool+cluster&oq=pgtool+cluster&aqs=chrome..69i57j0l5.8079j0j7&sourceid=chrome&ie=UTF-8)
 - http://www.devopsdays.in/postgresql-replication-failover-recovery-ubuntu-16-04/
