@@ -27,7 +27,7 @@ Enter it again:
 You are connected to database "postgres" as user "postgres" via socket in "/var/run/postgresql" at port "5432"
 ```
 
-## Configure Master Server
+## Master Server
 - /etc/postgresql/9.5/main/postgresql.conf
 ```
 listen_addresses = '*'
@@ -55,11 +55,11 @@ sudo chown -R postgres:postgres /var/lib/postgresql/9.5/main/archive/
 - /etc/postgresql/9.5/main/pg_hba.conf
 ```
 # localhost
-host    replication     postgres        127.0.0.1/32            md5
+host    replication     replica        127.0.0.1/32            md5
 # master ip address
-host    replication     postgres        172.17.3.9/32           md5
+host    replication     replica        172.17.3.9/32           md5
 # slave ip address
-host    replication     postgres        172.17.3.12/32          md5
+host    replication     replica        172.17.3.12/32          md5
 ```
 
 - Resetart
@@ -67,12 +67,11 @@ host    replication     postgres        172.17.3.12/32          md5
 sudo systemctl restart postgresql
 ```
 
-- Create replica user
+- Check replica user
 ```
-sudo su - postgres
-psql
-# CREATE USER replica REPLICATION LOGIN ENCRYPTED PASSWORD 'koscom!234';
-CREATE ROLE
+$ sudo su - postgres
+$ psql
+# CREATE USER replica REPLICATION LOGIN ENCRYPTED PASSWORD 'aqwe123@';
 # \du
                                    List of roles
  Role name |                         Attributes                         | Member of
@@ -81,7 +80,7 @@ CREATE ROLE
  replica   | Replication                                                | {}
 ```
 
-## Configure Slave Server
+## Slave Server
 
 - /etc/postgresql/9.5/main/postgresql.conf
 ```
@@ -92,8 +91,6 @@ listen_addresses = '*'
 wal_level = hot_standby
 synchronous_commit = local
 
-
-
 #------------------------------------------------------------------------------
 # REPLICATION
 #------------------------------------------------------------------------------
@@ -101,21 +98,61 @@ max_wal_senders = 2
 wal_keep_segments = 10
 synchronous_standby_names = 'pgslave001'
 hot_standby = on
-
-```
-## Master postgreSQL data 를 Salve 로 복제 
-- Slave login
-```
-sudo su - postgres
-cd 9.5
-mv main main-backup
-mkdir main; chmod 700 main
-pg_basebackup -h 172.17.3.9 -U replica -D /var/lib/postgresql/9.5/main -P --xlog
-
-cd /var/lib/postgresql/9.6/main/
-vim recovery.conf
 ```
 
+- Master postgreSQL data 를 Salve 로 복제 
+```
+$ sudo su - postgres
+$ cd 9.5
+$ mv main main-backup
+$ mkdir main; chmod 700 main
+$ pg_basebackup -h 172.17.3.9 -U postgres -D /var/lib/postgresql/9.5/main -P --xlog
+```
+- Slave 설정
+```
+$ vi /var/lib/postgresql/9.5/main/recovery.conf
+standby_mode = 'on'
+primary_conninfo = 'host=172.17.3.9 port=5432 user=replica password=aqwe123@ application_name=pgslave001'
+restore_command = 'cp /var/lib/postgresql/9.5/main/archive/%f %p'
+trigger_file = '/tmp/postgresql.trigger.5432'
+
+$ chmod 600 /var/lib/postgresql/9.5/main/recovery.conf
+$ logout
+
+$ sudo systemctl start postgresql
+$ netstat -plntu
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
+tcp        0      0 172.17.3.12:5432        0.0.0.0:*               LISTEN      -
+tcp6       0      0 :::22                   :::*                    LISTEN      -
+```
+
+
+## Testing
+- @Master: Check cluster status
+```
+su - postgres
+psql -c "select application_name, state, sync_priority, sync_state from pg_stat_replication;"
+psql -x -c "select * from pg_stat_replication;"
+```
+- @Master: Create table 
+```
+su - postgres
+psql
+CREATE TABLE replica_test (hakase varchar(100));
+INSERT INTO replica_test VALUES ('howtoforge.com');
+INSERT INTO replica_test VALUES ('This is from Master');
+INSERT INTO replica_test VALUES ('pg replication by hakase-labs');
+```
+- @Slave
+```
+su - postgres
+psql
+select * from replica_test;
+INSERT INTO replica_test VALUES ('this is SLAVE');
+#ERROR
+```
 
 ## Reference
 - [Google: Pgpool cluster](https://www.google.co.kr/search?q=pgtool+cluster&oq=pgtool+cluster&aqs=chrome..69i57j0l5.8079j0j7&sourceid=chrome&ie=UTF-8)
