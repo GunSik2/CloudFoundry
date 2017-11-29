@@ -4,6 +4,9 @@
 - Master (172.17.3.9) accepts connections from the client with read and write permissions
 - Slave (172.17.3.12) the standby server runs a copy of the data from the master server with read-only permission.
 
+![](https://user-images.githubusercontent.com/11453229/33374601-311f6c12-d54a-11e7-99d2-6983a6ee4e7f.png)
+
+
 ## Install PostgreSQL Master/Slave
 - Install
 ```
