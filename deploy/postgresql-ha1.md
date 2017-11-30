@@ -57,6 +57,7 @@ sudo chown -R postgres:postgres /var/lib/postgresql/9.5/main/archive/
 ```
 - /etc/postgresql/9.5/main/pg_hba.conf
 ```
+host    all             postgres        172.17.3.0/24           md5
 # localhost
 host    replication     replica        127.0.0.1/32            md5
 # master ip address
