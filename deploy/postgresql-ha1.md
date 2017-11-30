@@ -57,13 +57,21 @@ sudo chown -R postgres:postgres /var/lib/postgresql/9.5/main/archive/
 ```
 - /etc/postgresql/9.5/main/pg_hba.conf
 ```
-host    all             postgres        172.17.3.0/24           md5
+host    all             replica        172.17.3.0/24           md5
 # localhost
 host    replication     replica        127.0.0.1/32            md5
 # master ip address
 host    replication     replica        172.17.3.9/32           md5
 # slave ip address
 host    replication     replica        172.17.3.12/32          md5
+```
+
+- /var/lib/postgresql/9.5/main/recovery.conf
+```
+standby_mode = 'on'
+primary_conninfo = 'host=172.17.3.12 port=5432 user=replica password=aqwe123@ application_name=pgslave001'
+restore_command = 'cp /var/lib/postgresql/9.5/main/archive/%f %p'
+trigger_file = '/tmp/postgresql.trigger.5432'
 ```
 
 - Resetart
@@ -103,6 +111,16 @@ wal_keep_segments = 10
 synchronous_standby_names = 'pgslave001'
 hot_standby = on
 ```
+- /etc/postgresql/9.5/main/pg_hba.conf
+```
+host    all             replica        172.17.3.0/24           md5
+# localhost
+host    replication     replica        127.0.0.1/32            md5
+# master ip address
+host    replication     replica        172.17.3.9/32           md5
+# slave ip address
+host    replication     replica        172.17.3.12/32          md5
+```
 
 - Master postgreSQL data 를 Salve 로 복제 
 ```
@@ -112,6 +130,7 @@ $ mv main main-backup
 $ mkdir main; chmod 700 main
 $ pg_basebackup -h 172.17.3.9 -U postgres -D /var/lib/postgresql/9.5/main -P --xlog
 ```
+
 - Slave 설정
 ```
 $ vi /var/lib/postgresql/9.5/main/recovery.conf
@@ -173,6 +192,66 @@ $ psql
 # INSERT INTO replica_test VALUES ('this is SLAVE');
 ERROR:  cannot execute INSERT in a read-only transaction
 ```
+
+## Manual Failover 
+### kill master process
+- process kill
+```
+killall postgres
+```
+- Slave : log
+```
+$ tail -f /var/log/postgresql/postgresql-9.5-main.log
+2017-11-30 19:09:51 KST [12942-2] FATAL:  could not receive data from WAL stream: FATAL:  terminating connection due to administrator command
+cp: cannot stat '/var/lib/postgresql/9.5/main/archive/000000010000000000000016': No such file or directory
+2017-11-30 19:09:51 KST [12936-6] LOG:  invalid record length at 0/16001330
+2017-11-30 19:09:51 KST [13110-1] FATAL:  could not connect to the primary server: FATAL:  the database system is shutting down
+        FATAL:  the database system is shutting down
+```
+### manual failover on slave
+- Slave : manual Failover
+```
+$ touch /tmp/postgresql.trigger.5432
+```
+- Slave log
+```
+$ tail -f /var/log/postgresql/postgresql-9.5-main.log
+2017-11-30 19:12:07 KST [12936-10] LOG:  archive recovery complete
+2017-11-30 19:12:07 KST [12936-11] LOG:  MultiXact member wraparound protections are now enabled
+2017-11-30 19:12:07 KST [12935-2] LOG:  database system is ready to accept connections
+2017-11-30 19:12:07 KST [13210-1] LOG:  autovacuum launcher started
+```
+- Slave test
+```
+psql -c "select * from replica_test;"
+psql -c "INSERT INTO replica_test VALUES ('slave is master');"
+```
+### manual recover master as slave
+- Master : recover data from the lastest master 
+```
+rm -rf /var/lib/postgresql/9.5/main
+pg_basebackup  -h 172.17.3.12 -U replica -D /var/lib/postgresql/9.5/main -P --xlog
+```
+
+- Master : start the server as slave
+```
+sudo systemctl start postgresql
+```
+- check master log
+```
+$ tail -f /var/log/postgresql/postgresql-9.5-main.log
+2017-11-30 19:26:42 KST [30204-5] LOG:  MultiXact member wraparound protections are now enabled
+2017-11-30 19:26:42 KST [30209-1] LOG:  autovacuum launcher started
+2017-11-30 19:26:42 KST [30203-1] LOG:  database system is ready to accept connections
+```
+- check snapshot number on both
+```
+$ psql -c "SELECT txid_current_snapshot();"
+ txid_current_snapshot
+-----------------------
+ 635:635:
+```
+
 
 ## [Go to 2nd chapter](postgresql-ha2.md)
 
