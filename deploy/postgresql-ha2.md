@@ -49,12 +49,44 @@ $ sudo sh -c "echo 'admin:e5624f3f6dd941f9a4e181013fa1b7fd' >> /usr/local/pgpool
 - /usr/local/pgpool2/etc/pgpool.conf
 ```
 listen_addresses = '*'
+#port = 5432
+socket_dir = '/var/run/postgresql'
+
+#pcp_listen_addresses = '*'
+#pcp_port = 9898
+pcp_socket_dir = '/var/run/postgresql'
+
 
 backend_hostname0 = '172.17.3.9'
+backend_port0 = 5433
+backend_weight0 = 1
 backend_data_directory0 = '/var/lib/postgresql/9.5/main/'
+backend_flag0 = 'ALLOW_TO_FAILOVER'
 
 backend_hostname1 = '172.17.3.12'
+backend_port1 = 5433
+backend_weight1 = 1
 backend_data_directory1 = '/var/lib/postgresql/9.5/main/'
+backend_flag1 = 'ALLOW_TO_FAILOVER'
+
+#pid_file_name = '/var/run/pgpool/pgpool.pid' #/var/run/postgresql/pgpool.pid'
+#replication_mode = off   #we are not using replication mode but master/slave streaming mode.
+#load_balance_mode = on
+
+#master_slave_mode = on
+#master_slave_sub_mode = 'stream'
+sr_check_period = 5
+sr_check_user = 'postgres'
+sr_check_password = 'changeit'
+
+helth_check_period = 5
+health_check_timeout = 0
+helth_check_user = 'postgres'
+health_check_password = 'changeit'
+
+failover_command = '/etc/pgpool2/3.5.2/failover.sh %d %P %H myreplicationpassword /etc/postgresql/9.5/main/im_the_master'
+
+
 ```
 
 ## pgpool2 시작
@@ -63,3 +95,5 @@ backend_data_directory1 = '/var/lib/postgresql/9.5/main/'
 
 ## Reference
 - http://www.pgpool.net/docs/latest/en/html/admin.html
+- https://www.itenlight.com/blog/2016/05/21/PostgreSQL+HA+with+pgpool-II+-+Part+5
+- https://blog.dbi-services.com/vertically-scale-your-postgresql-infrastructure-with-pgpool-2-automatic-failover-and-reconfiguration/
