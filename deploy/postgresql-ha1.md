@@ -262,3 +262,4 @@ $ psql -c "SELECT txid_current_snapshot();"
 - http://www.pgpool.net/docs/pgpool-II-3.7.0/doc/en/html/example-configs.html
 - hhttps://www.devmanuals.net/install/ubuntu/ubuntu-16-04-LTS-Xenial-Xerus/how-to-install-postgresql-9.5-pgpool2.html
 - https://www.howtoforge.com/tutorial/how-to-set-up-master-slave-replication-for-postgresql-96-on-ubuntu-1604/
+- https://blog.qodot.me/post/postgresql-replication-%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0/
