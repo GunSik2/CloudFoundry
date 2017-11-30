@@ -11,12 +11,12 @@
 - Install
 ```
 sudo apt update
-sudo apt install postgresql-9.5-pgpool2
+sudo apt install postgresql-9.5
 ```
 - Check
 ```
-dpkg -L postgresql-9.5-pgpool2
 dpkg -L postgresql-9.5
+#dpkg -L postgresql-9.5-pgpool2
 ```
 - Config
 ```
