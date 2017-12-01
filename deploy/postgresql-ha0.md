@@ -21,7 +21,7 @@ apt install postgresql-9.6
 ```
 - paf 
 ```
-apt install --no-install-recommends pacemaker fence-agents crmsh net-tools
+apt install pacemaker fence-agents net-tools pcs -y
 wget 'https://github.com/ClusterLabs/PAF/releases/download/v2.2.0/resource-agents-paf_2.2.0-2_all.deb'
 dpkg -i resource-agents-paf_2.2.0-2_all.deb
 apt -f install
@@ -112,19 +112,26 @@ systemctl disable pacemaker
 systemctl stop pacemaker.service corosync.service
 ```
 
-- On all nodes: crm requires the system user root to be able to connect to all remote nodes without password.
-  - generate key 
-    ```
-    ssh-keygen        # do no set any password
-    ```
-  - add "~root/.ssh/id_rsa.pub" to "~root/.ssh/authorized_keys" of the other nodes 
+- On all nodes: set a password for cluster management tool pcsd, which uses the hacluster system user to work and communicate with other members of the cluster.
+```
+passwd hacluster
+
+systemctl enable pcsd
+systemctl start pcsd
+```
+- On all nodes: Authenticate each node to the other ones using the following command
+```
+$ pcs cluster auth portal_svc_db1 portal_svc_db2 -u hacluster
+Password:
+portal_svc_db1: Authorized
+portal_svc_db2: Authorized
+```
 
 ## Cluster createion
-- crm cli tool is able to create and start the whole cluster.
-- On one of the node
+- pcs cli tool is able to create and start the whole cluster.
+- On one of the node:
 ```
-crm cluster init srv1 srv2 srv3
-crm cluster portal_svc_db1 portal_svc_db2
+pcs cluster setup --name portal_svc_db portal_svc_db1 portal_svc_db2
 ```
 
 ## Reference
