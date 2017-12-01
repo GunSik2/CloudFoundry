@@ -4,7 +4,12 @@
 
 ## Env
 - Ubuntu 16.04
-
+- hosts
+```
+172.19.3.10     portal_svc_db1
+172.19.3.9      portal_svc_db2
+172.19.3.8      portal_svc_dbvip
+```
 ## PostgreSQL and Cluster stack installation
 - postgres-9.6
 ```
@@ -16,6 +21,7 @@ apt install postgresql-9.6
 ```
 - paf 
 ```
+apt install --no-install-recommends pacemaker fence-agents crmsh net-tools
 wget 'https://github.com/ClusterLabs/PAF/releases/download/v2.2.0/resource-agents-paf_2.2.0-2_all.deb'
 dpkg -i resource-agents-paf_2.2.0-2_all.deb
 apt -f install
@@ -36,8 +42,8 @@ systemd-tmpfiles --create /etc/tmpfiles.d/postgresql-part.conf
 su - postgres
 
 cd /etc/postgresql/9.6/main/
-cat <<EOP >> postgresql.conf
 
+cat <<EOP >> postgresql.conf
 listen_addresses = '*'
 wal_level = replica
 max_wal_senders = 10
@@ -77,7 +83,7 @@ systemctl stop postgresql@9.6-main
 su - postgres
 
 rm -rf 9.6/main/
-pg_basebackup -h pgsql-vip -D ~postgres/9.6/main/ -X stream -P
+pg_basebackup -h portal_svc_dbvip -D ~postgres/9.6/main/ -X stream -P
 
 cp /etc/postgresql/9.6/main/recovery.conf.pcmk ~postgres/9.6/main/recovery.conf
 
@@ -95,10 +101,31 @@ echo disabled > /etc/postgresql/9.6/main/start.conf
 
 - On srv1 : remove the master ip
 ```
-ip addr del 192.168.122.60/24 dev eth0
+ip addr del 172.19.3.8/24 dev ens3:0
 ```
 
 ## Cluster pre-requisites
+- On all nodes: stop corosync & pacemaker.
+```
+systemctl disable corosync
+systemctl disable pacemaker
+systemctl stop pacemaker.service corosync.service
+```
+
+- On all nodes: crm requires the system user root to be able to connect to all remote nodes without password.
+  - generate key 
+    ```
+    ssh-keygen        # do no set any password
+    ```
+  - add "~root/.ssh/id_rsa.pub" to "~root/.ssh/authorized_keys" of the other nodes 
+
+## Cluster createion
+- crm cli tool is able to create and start the whole cluster.
+- On one of the node
+```
+crm cluster init srv1 srv2 srv3
+crm cluster portal_svc_db1 portal_svc_db2
+```
 
 ## Reference
 - http://clusterlabs.github.io/PAF/Quick_Start-Debian-9-crm.html
