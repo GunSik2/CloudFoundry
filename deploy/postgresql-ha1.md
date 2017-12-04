@@ -39,6 +39,12 @@ primary_conninfo = 'host=172.17.3.8 port=5432 user=rep password=yourpassword'
 trigger_file = '/tmp/postgresql.trigger.5432'
 ```
 
+- /etc/postgresql/9.5/main/pg_hba.conf
+```
+host    replication      rep              172.17.3.0/24           md5
+host    all              all              172.17.3.0/24           md5
+```
+
 ## Master Server
 - Set postgres password
 ```
@@ -49,12 +55,6 @@ psql -c '\password postgres'
 ```
 sudo su - postgres
 psql -c "CREATE USER rep REPLICATION LOGIN CONNECTION LIMIT 1 ENCRYPTED PASSWORD 'yourpassword';"
-```
-
-- /etc/postgresql/9.5/main/pg_hba.conf
-```
-host    replication     rep        172.17.3.12/32         md5
-host    all             postgres   172.17.3.0/24          md5
 ```
 
 - /etc/postgresql/9.5/main/postgresql.conf
@@ -75,11 +75,6 @@ sudo systemctl restart postgresql
 - Stop postgresql
 ```
 sudo systemctl stop postgresql
-```
-
-- /etc/postgresql/9.5/main/pg_hba.conf
-```
-host    replication     rep        172.17.3.9/32          md5
 ```
 
 - /etc/postgresql/9.5/main/postgresql.conf
