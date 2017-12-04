@@ -43,6 +43,7 @@ trigger_file = '/tmp/postgresql.trigger.5432'
 
 ## Master Server
 - Set postgres password
+```
 psql -c '\password postgres'
 ```
 
