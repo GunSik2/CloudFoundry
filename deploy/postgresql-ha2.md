@@ -136,6 +136,7 @@ postgres=# show pool_nodes;
 
 ## Reference
 - http://www.pgpool.net/docs/latest/en/html/admin.html
+- https://sonnguyen.ws/replication-load-balance-in-posgresql-replication-with-pgpool2/
 - https://www.itenlight.com/blog/2016/05/21/PostgreSQL+HA+with+pgpool-II+-+Part+5
 - https://blog.dbi-services.com/vertically-scale-your-postgresql-infrastructure-with-pgpool-2-automatic-failover-and-reconfiguration/
 - http://www.pgpool.net/docs/pgpool-II-3.7.0/doc/en/html/example-cluster.html
