@@ -3,160 +3,118 @@
 ## Env
 - Master (172.17.3.9) accepts connections from the client with read and write permissions
 - Slave (172.17.3.12) the standby server runs a copy of the data from the master server with read-only permission.
+- VIP (172.17.3.8) 
 
 ![](https://user-images.githubusercontent.com/11453229/33374601-311f6c12-d54a-11e7-99d2-6983a6ee4e7f.png)
 
 
-## Install PostgreSQL Master/Slave
-- Install
+## Boath Master and Slave
+- Install PostgreSQL Master/Slave
 ```
 sudo apt update
-sudo apt install postgresql-9.5
+sudo apt install postgresql-9.5-pgpool2 -y
 ```
 - Check
 ```
-dpkg -L postgresql-9.5
-#dpkg -L postgresql-9.5-pgpool2
+$ dpkg -l | grep post
+ii  postgresql-9.5                   9.5.10-0ubuntu0.16.04                      amd64        object-relational SQL database, version 9.5 server
+ii  postgresql-9.5-pgpool2           3.4.3-1                                    amd64        connection pool server and replication proxy for PostgreSQL - modules
+ii  postgresql-client-9.5            9.5.10-0ubuntu0.16.04                      amd64        front-end programs for PostgreSQL 9.5
+ii  postgresql-client-common         173ubuntu0.1                               all          manager for multiple PostgreSQL client versions
+ii  postgresql-common                173ubuntu0.1                               all          PostgreSQL database-cluster manager
+ii  postgresql-contrib-9.5           9.5.10-0ubuntu0.16.04                      amd64        additional facilities for PostgreSQL
 ```
-- Config
+
+- copy ssh key to oppsite server for the both servers
 ```
 sudo su - postgres
-psql
-# \password postgres
-Enter new password:
-Enter it again:
-
-# \conninfo
-You are connected to database "postgres" as user "postgres" via socket in "/var/run/postgresql" at port "5432"
+ssh-keygen
+cat /var/lib/postgresql/.ssh/id_rsa.pub  // copy it to the oppistie server (~/.ssh/authorized_keys)
 ```
 
-## Master Server
-- /etc/postgresql/9.5/main/postgresql.conf
-```
-listen_addresses = '*'
-#----------------------------
-# WRITE AHEAD LOG
-#---------------------------
-wal_level = hot_standby
-synchronous_commit = local
-archive_mode = on
-archive_command = 'cp %p /var/lib/postgresql/9.5/main/archive/%f'
-
-#------------------------------------------------------------------------------
-# REPLICATION
-#------------------------------------------------------------------------------
-max_wal_senders = 2
-wal_keep_segments = 10
-synchronous_standby_names = 'pgslave001'
-```
--  archive directory 생성
-```
-sudo mkdir -p /var/lib/postgresql/9.5/main/archive/
-sudo chmod 700 /var/lib/postgresql/9.5/main/archive/
-sudo chown -R postgres:postgres /var/lib/postgresql/9.5/main/archive/
-```
-- /etc/postgresql/9.5/main/pg_hba.conf
-```
-host    all             replica        172.17.3.0/24           md5
-# localhost
-host    replication     replica        127.0.0.1/32            md5
-# master ip address
-host    replication     replica        172.17.3.9/32           md5
-# slave ip address
-host    replication     replica        172.17.3.12/32          md5
-```
-
-- /var/lib/postgresql/9.5/main/recovery.conf
+- /etc/postgresql/9.5/main/recovery.conf.pgpool
 ```
 standby_mode = 'on'
-primary_conninfo = 'host=172.17.3.12 port=5432 user=replica password=aqwe123@ application_name=pgslave001'
-restore_command = 'cp /var/lib/postgresql/9.5/main/archive/%f %p'
+primary_conninfo = 'host=172.17.3.8 port=5432 user=rep password=yourpassword'
 trigger_file = '/tmp/postgresql.trigger.5432'
 ```
 
-- Resetart
+## Create 
+
+## Master Server
+- Set postgres password
+psql -c '\password postgres'
+```
+
+- Create an account for replication
+```
+sudo su - postgres
+psql -c "CREATE USER rep REPLICATION LOGIN CONNECTION LIMIT 1 ENCRYPTED PASSWORD 'yourpassword';"
+```
+
+- /etc/postgresql/9.5/main/pg_hba.conf
+```
+host    replication     rep        172.17.3.12/32          md5
+```
+
+- /etc/postgresql/9.5/main/postgresql.conf
+```
+listen_addresses = '*'
+wal_level = 'hot_standby'
+archive_mode = on
+archive_command = 'cd .'
+max_wal_senders = 1
+hot_standby = on
+```
+- restart master server
 ```
 sudo systemctl restart postgresql
 ```
 
-- Check replica user
+## Slave Server
+- Stop postgresql
 ```
-$ sudo su - postgres
-$ psql
-# CREATE USER replica REPLICATION LOGIN ENCRYPTED PASSWORD 'aqwe123@';
-# \du
-                                   List of roles
- Role name |                         Attributes                         | Member of
------------+------------------------------------------------------------+-----------
- postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
- replica   | Replication                                                | {}
+sudo systemctl stop postgresql
 ```
 
-## Slave Server
+- /etc/postgresql/9.5/main/pg_hba.conf
+```
+host    replication     rep        172.17.3.9/32          md5
+```
 
 - /etc/postgresql/9.5/main/postgresql.conf
 ```
 listen_addresses = '*'
-#----------------------------
-# WRITE AHEAD LOG
-#---------------------------
-wal_level = hot_standby
-synchronous_commit = local
-
-#------------------------------------------------------------------------------
-# REPLICATION
-#------------------------------------------------------------------------------
-max_wal_senders = 2
-wal_keep_segments = 10
-synchronous_standby_names = 'pgslave001'
+wal_level = 'hot_standby'
+archive_mode = on
+archive_command = 'cd .'
+max_wal_senders = 1
 hot_standby = on
 ```
-- /etc/postgresql/9.5/main/pg_hba.conf
+
+## Master Server
+- Start replication
 ```
-host    all             replica        172.17.3.0/24           md5
-# localhost
-host    replication     replica        127.0.0.1/32            md5
-# master ip address
-host    replication     replica        172.17.3.9/32           md5
-# slave ip address
-host    replication     replica        172.17.3.12/32          md5
+psql -c "select pg_start_backup('initial_backup');"
+rsync -cva --inplace --exclude=*pg_xlog* /var/lib/postgresql/9.5/main/ 172.17.3.12:/var/lib/postgresql/9.5/main/
+psql -c "select pg_stop_backup();"
 ```
 
-- Master postgreSQL data 를 Salve 로 복제 
+## Slave Server
+- /var/lib/postgresql/9.5/main/recovery.conf
 ```
-$ sudo su - postgres
-$ cd 9.5
-$ mv main main-backup
-$ mkdir main; chmod 700 main
-$ pg_basebackup -h 172.17.3.9 -U postgres -D /var/lib/postgresql/9.5/main -P --xlog
+cp /etc/postgresql/9.5/main/recovery.conf.pgpool /var/lib/postgresql/9.5/main/recovery.conf
 ```
-
-- Slave 설정
+- start the slave server
 ```
-$ vi /var/lib/postgresql/9.5/main/recovery.conf
-standby_mode = 'on'
-primary_conninfo = 'host=172.17.3.9 port=5432 user=replica password=aqwe123@ application_name=pgslave001'
-restore_command = 'cp /var/lib/postgresql/9.5/main/archive/%f %p'
-trigger_file = '/tmp/postgresql.trigger.5432'
-
-$ chmod 600 /var/lib/postgresql/9.5/main/recovery.conf
-$ logout
-
 $ sudo systemctl start postgresql
-$ tail -f /var/log/postgresql/postgresql-9.5-main.log
-2017-11-29 21:00:07 KST [11242-3] LOG:  redo starts at 0/13000028
-2017-11-29 21:00:07 KST [11242-4] LOG:  consistent recovery state reached at 0/130000F8
-2017-11-29 21:00:07 KST [11241-1] LOG:  database system is ready to accept read only connections
-cp: cannot stat '/var/lib/postgresql/9.5/main/archive/000000010000000000000014': No such file or directory
-2017-11-29 21:00:08 KST [11250-1] LOG:  started streaming WAL from primary at 0/14000000 on timeline 1
-2017-11-29 21:00:08 KST [11251-1] [unknown]@[unknown] LOG:  incomplete startup packet
 
-$ netstat -plntu
-Active Internet connections (only servers)
-Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
-tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
-tcp        0      0 172.17.3.12:5432        0.0.0.0:*               LISTEN      -
-tcp6       0      0 :::22                   :::*                    LISTEN      -
+$ tail -f /var/log/postgresql/postgresql-9.5-main.log
+2017-12-04 11:34:37 KST [27019-2] LOG:  entering standby mode
+2017-12-04 11:34:37 KST [27020-1] LOG:  started streaming WAL from primary at 0/3000000 on timeline 1
+2017-12-04 11:34:37 KST [27019-3] LOG:  redo starts at 0/3000028
+2017-12-04 11:34:37 KST [27019-4] LOG:  consistent recovery state reached at 0/3000130
+2017-12-04 11:34:37 KST [27018-1] LOG:  database system is ready to accept read only connections
 ```
 
 
@@ -167,12 +125,7 @@ $ su - postgres
 $ psql -c "select application_name, state, sync_priority, sync_state from pg_stat_replication;"
  application_name |   state   | sync_priority | sync_state
 ------------------+-----------+---------------+------------
- pgslave001       | streaming |             1 | sync
-
-$ psql -c "select application_name, state, sync_priority, sync_state from pg_stat_replication;"
- application_name |   state   | sync_priority | sync_state
-------------------+-----------+---------------+------------
- pgslave001       | streaming |             1 | sync
+ walreceiver      | streaming |             0 | async
 ```
 
 - @Master: Create table 
@@ -181,75 +134,82 @@ su - postgres
 psql
 CREATE TABLE replica_test (hakase varchar(100));
 INSERT INTO replica_test VALUES ('howtoforge.com');
-INSERT INTO replica_test VALUES ('This is from Master');
-INSERT INTO replica_test VALUES ('pg replication by hakase-labs');
+select * from replica_test;
 ```
 - @Slave
 ```
-$ su - postgres
-$ psql
-# select * from replica_test;
-# INSERT INTO replica_test VALUES ('this is SLAVE');
+su - postgres
+psql -c "select * from replica_test;"
+psql -c "INSERT INTO replica_test VALUES ('this is SLAVE');"
 ERROR:  cannot execute INSERT in a read-only transaction
 ```
 
 ## Manual Failover 
 ### kill master process
-- process kill
+- @Maser: kill process
 ```
 killall postgres
 ```
-- Slave : log
+- @Slave : log
 ```
 $ tail -f /var/log/postgresql/postgresql-9.5-main.log
-2017-11-30 19:09:51 KST [12942-2] FATAL:  could not receive data from WAL stream: FATAL:  terminating connection due to administrator command
-cp: cannot stat '/var/lib/postgresql/9.5/main/archive/000000010000000000000016': No such file or directory
-2017-11-30 19:09:51 KST [12936-6] LOG:  invalid record length at 0/16001330
-2017-11-30 19:09:51 KST [13110-1] FATAL:  could not connect to the primary server: FATAL:  the database system is shutting down
-        FATAL:  the database system is shutting down
+2017-12-04 11:42:43 KST [27133-1] FATAL:  could not connect to the primary server: could not connect to server: Connection refused
+                Is the server running on host "172.17.3.9" and accepting
+                TCP/IP connections on port 5432?
 ```
-### manual failover on slave
-- Slave : manual Failover
+
+### failover on slave
+- @Slave : manual Failover
 ```
 $ touch /tmp/postgresql.trigger.5432
 ```
-- Slave log
+- @Slave log
 ```
 $ tail -f /var/log/postgresql/postgresql-9.5-main.log
-2017-11-30 19:12:07 KST [12936-10] LOG:  archive recovery complete
-2017-11-30 19:12:07 KST [12936-11] LOG:  MultiXact member wraparound protections are now enabled
-2017-11-30 19:12:07 KST [12935-2] LOG:  database system is ready to accept connections
-2017-11-30 19:12:07 KST [13210-1] LOG:  autovacuum launcher started
+2017-12-04 11:43:58 KST [27019-6] LOG:  trigger file found: /tmp/postgresql.trigger.5432
+2017-12-04 11:43:58 KST [27019-7] LOG:  redo done at 0/40159D8
+2017-12-04 11:43:58 KST [27019-8] LOG:  last completed transaction was at log time 2017-12-04 11:39:59.911413+09
+2017-12-04 11:43:58 KST [27019-9] LOG:  selected new timeline ID: 2
+2017-12-04 11:43:59 KST [27019-10] LOG:  archive recovery complete
+2017-12-04 11:43:59 KST [27019-11] LOG:  MultiXact member wraparound protections are now enabled
+2017-12-04 11:43:59 KST [27018-2] LOG:  database system is ready to accept connections
+2017-12-04 11:43:59 KST [27150-1] LOG:  autovacuum launcher started
 ```
-- Slave test
+- @Slave test
 ```
 psql -c "select * from replica_test;"
 psql -c "INSERT INTO replica_test VALUES ('slave is master');"
 ```
+
 ### manual recover master as slave
-- Master : recover data from the lastest master 
+- @OldMaster : recover data from the lastest master 
 ```
 rm -rf /var/lib/postgresql/9.5/main
-pg_basebackup  -h 172.17.3.12 -U replica -D /var/lib/postgresql/9.5/main -P --xlog
+pg_basebackup  -h 172.17.3.12 -U rep -D /var/lib/postgresql/9.5/main -P --xlog
 ```
 
-- Master : start the server as slave
+- @OldMaster : start the server as slave
 ```
+sudo cp /etc/postgresql/9.5/main/recovery.conf.pgpool /var/lib/postgresql/9.5/main/recovery.conf
 sudo systemctl start postgresql
 ```
 - check master log
 ```
 $ tail -f /var/log/postgresql/postgresql-9.5-main.log
-2017-11-30 19:26:42 KST [30204-5] LOG:  MultiXact member wraparound protections are now enabled
-2017-11-30 19:26:42 KST [30209-1] LOG:  autovacuum launcher started
-2017-11-30 19:26:42 KST [30203-1] LOG:  database system is ready to accept connections
+2017-12-04 12:19:02 KST [14035-1] LOG:  database system was interrupted; last known up at 2017-12-04 12:16:51 KST
+2017-12-04 12:19:02 KST [14035-2] LOG:  entering standby mode
+2017-12-04 12:19:02 KST [14035-3] LOG:  redo starts at 0/A000028
+2017-12-04 12:19:02 KST [14035-4] LOG:  consistent recovery state reached at 0/A0000F8
+2017-12-04 12:19:02 KST [14034-1] LOG:  database system is ready to accept read only connections
+2017-12-04 12:19:02 KST [14039-1] LOG:  started streaming WAL from primary at 0/B000000 on timeline 2
+2017-12-04 12:19:02 KST [14040-1] [unknown]@[unknown] LOG:  incomplete startup packet
 ```
 - check snapshot number on both
 ```
 $ psql -c "SELECT txid_current_snapshot();"
  txid_current_snapshot
 -----------------------
- 635:635:
+ 628:628:
 ```
 
 
