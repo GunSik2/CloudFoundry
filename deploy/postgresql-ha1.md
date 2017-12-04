@@ -91,20 +91,13 @@ archive_command = 'cd .'
 max_wal_senders = 1
 hot_standby = on
 ```
-
-## Master Server
 - Start replication
 ```
-psql -c "select pg_start_backup('initial_backup');"
-rsync -cva --inplace --exclude=*pg_xlog* /var/lib/postgresql/9.5/main/ 172.17.3.12:/var/lib/postgresql/9.5/main/
-psql -c "select pg_stop_backup();"
-```
-
-## Slave Server
-- /var/lib/postgresql/9.5/main/recovery.conf
-```
+rm -rf /var/lib/postgresql/9.5/main
+pg_basebackup  -h 172.17.3.9 -U rep -D /var/lib/postgresql/9.5/main -P --xlog
 cp /etc/postgresql/9.5/main/recovery.conf.pgpool /var/lib/postgresql/9.5/main/recovery.conf
 ```
+
 - start the slave server
 ```
 $ sudo systemctl start postgresql
@@ -126,6 +119,11 @@ $ psql -c "select application_name, state, sync_priority, sync_state from pg_sta
  application_name |   state   | sync_priority | sync_state
 ------------------+-----------+---------------+------------
  walreceiver      | streaming |             0 | async
+
+$ psql -c "SELECT txid_current_snapshot();"
+ txid_current_snapshot
+-----------------------
+ 628:628:
 ```
 
 - @Master: Create table 
@@ -180,17 +178,21 @@ $ tail -f /var/log/postgresql/postgresql-9.5-main.log
 psql -c "select * from replica_test;"
 psql -c "INSERT INTO replica_test VALUES ('slave is master');"
 ```
+- @Slave remove trigger
+```
+rm /tmp/postgresql.trigger.5432
+```
 
 ### manual recover master as slave
 - @OldMaster : recover data from the lastest master 
 ```
 rm -rf /var/lib/postgresql/9.5/main
 pg_basebackup  -h 172.17.3.12 -U rep -D /var/lib/postgresql/9.5/main -P --xlog
+cp /etc/postgresql/9.5/main/recovery.conf.pgpool /var/lib/postgresql/9.5/main/recovery.conf
 ```
 
 - @OldMaster : start the server as slave
 ```
-sudo cp /etc/postgresql/9.5/main/recovery.conf.pgpool /var/lib/postgresql/9.5/main/recovery.conf
 sudo systemctl start postgresql
 ```
 - check master log
@@ -206,6 +208,11 @@ $ tail -f /var/log/postgresql/postgresql-9.5-main.log
 ```
 - check snapshot number on both
 ```
+$ psql -c "select application_name, state, sync_priority, sync_state from pg_stat_replication;"
+ application_name |   state   | sync_priority | sync_state
+------------------+-----------+---------------+------------
+ walreceiver      | streaming |             0 | async
+ 
 $ psql -c "SELECT txid_current_snapshot();"
  txid_current_snapshot
 -----------------------
