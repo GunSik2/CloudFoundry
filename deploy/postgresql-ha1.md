@@ -39,8 +39,6 @@ primary_conninfo = 'host=172.17.3.8 port=5432 user=rep password=yourpassword'
 trigger_file = '/tmp/postgresql.trigger.5432'
 ```
 
-## Create 
-
 ## Master Server
 - Set postgres password
 ```
