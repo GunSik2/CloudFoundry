@@ -12,7 +12,7 @@
 - Install PostgreSQL Master/Slave
 ```
 sudo apt update
-sudo apt install postgresql-9.5-pgpool2 -y
+sudo apt install postgresql-9.5-pgpool2 pgpool2 -y
 ```
 - Check
 ```
@@ -90,6 +90,7 @@ archive_command = 'cd .'
 max_wal_senders = 1
 hot_standby = on
 ```
+
 - Start replication
 ```
 rm -rf /var/lib/postgresql/9.5/main
