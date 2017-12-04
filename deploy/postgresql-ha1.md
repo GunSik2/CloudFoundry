@@ -53,7 +53,8 @@ psql -c "CREATE USER rep REPLICATION LOGIN CONNECTION LIMIT 1 ENCRYPTED PASSWORD
 
 - /etc/postgresql/9.5/main/pg_hba.conf
 ```
-host    replication     rep        172.17.3.12/32          md5
+host    replication     rep        172.17.3.12/32         md5
+host    all             postgres   172.17.3.0/24          md5
 ```
 
 - /etc/postgresql/9.5/main/postgresql.conf
