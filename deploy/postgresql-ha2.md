@@ -1,8 +1,8 @@
-# PostgreSQL + Pgpool2
+# PostgreSQL + Pgpool2 + haproxy
 
 ## pgpool2 설치
 '''
-sudo apt install pgpool2
+sudo apt install pgpool2 postgresql-client-9.5
 '''
 
 ## pgpool2 설정
@@ -55,27 +55,37 @@ failback_command = ''
 
 - Filover script
 ```
+$ mkdir -p /usr/lib/postgresql/9.5/bin/
 $ cat /usr/lib/postgresql/9.5/bin/failover_stream.sh
-#! /bin/sh
 # Failover command for streaming replication.
-# This script assumes that DB node 0 is primary, and 1 is standby.
-# If standby goes down, do nothing. If primary goes down, create a
-# trigger file so that standby takes over primary node.
-#
-# Arguments: $1: failed node id. $2: new master hostname. $3: path to
-# trigger file.
 
-failed_node=$1
-new_master=$2
-trigger_file=$3
+#failover_stream.sh %d %P %H /tmp/postgresql.trigger.5432'
+#   %d = node id                                     0
+#   %H = hostname of the new master node             172.17.3.12
+#   %P = old primary node id                         0
+
+
+log_file="/tmp/failover.txt"
+
+failed_node="$1"
+oldmanster_node="$2"
+new_master="$3"
+trigger_file="$4"
+
+
+echo "[$(date)] parms: $*" >> $log_file
+echo "[$(date)] parms: $failed_node = $oldmaster_node " >> $log_file
 
 # Do nothing if standby goes down.
-if [ $failed_node = 1 ]; then
-    exit 0;
-fi
+#if [ $failed_node = 1 ]; then
+#    exit 0;
+#fi
 
-# Create the trigger file.
-/usr/bin/ssh -T $new_master /bin/touch $trigger_file
+if [ $failed_node = $oldmaster_node ]; then
+    # Create the trigger file.
+    echo "[$(date)] exec: /usr/bin/ssh -T $new_master /bin/touch $trigger_file" >> $log_file
+    ssh -T postgres@$new_master /bin/touch $trigger_file
+fi
 
 exit 0;
 
@@ -120,11 +130,14 @@ Dec  4 13:35:05 portal-svc-db-01 systemd[1]: pgpool2.service: Failed with result
 ## 테스트
 - pgpool 접속 조회
 ```
-$ psql -U postgres -p 5433 -c 'select application_name, state, sync_priority, sync_state from pg_stat_replication;'
+$ psql -h 172.17.2.241 -U postgres -p 5432 -c 'select application_name, state, sync_priority, sync_state from pg_stat_replication;'
 ```
-
-
-
+- pgpool 조회
+```
+# show pool_nodes;
+# show pool_pools;
+# show pool_version;
+```
 ## Haproxy config
 - /etc/haproxy/haproxy.cfg
 ```
