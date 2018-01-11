@@ -584,4 +584,4 @@ main
 - Bosh2 cli : https://bosh.io/docs/cli-v2.html
 - Deploy bosh2 for aws : https://bosh.io/docs/init-aws.html
 - Deploy cf : https://github.com/cloudfoundry/cf-deployment
-
+- Deploy bosh-lite : https://github.com/cloudfoundry/cf-deployment/tree/master/iaas-support/bosh-lite
