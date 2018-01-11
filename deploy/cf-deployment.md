@@ -57,7 +57,7 @@ $ bosh -e bosh-1 update-cloud-config ~/workspace/cf-deployment/iaas-support/bosh
 ```
 - deploy cf
 ```
-bosh -e bosh-1 upload-stemcell https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3445.2
+bosh -e bosh-1 upload-stemcell https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3468.15
 
 bosh -e bosh-1 -d cf deploy ~/workspace/cf-deployment/cf-deployment.yml \
   -o ~/workspace/cf-deployment/operations/bosh-lite.yml \
@@ -75,7 +75,7 @@ $ bosh -e bosh-1 update-cloud-config cf-deployment/aws/cloud-config.yml \
 ```
 - deploy cf on single zone 
 ```
-$ bosh -e bosh-1 upload-stemcell https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3445.2
+$ bosh -e bosh-1 upload-stemcell https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3468.15
 $ bosh -e bosh-1 -d cf deploy cf-deployment/cf-deployment.yml \
   --vars-store cf-vars.yml \
   -v system_domain=$SYSTEM_DOMAIN \
@@ -84,7 +84,7 @@ $ bosh -e bosh-1 -d cf deploy cf-deployment/cf-deployment.yml \
 ```
 - deploy cf on multiple zone
 ```
-$ bosh -e bosh-1 upload-stemcell https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3445.2
+$ bosh -e bosh-1 upload-stemcell https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3468.15
 $ export SYSTEM_DOMAIN=lite.paasxpert.com
 $ bosh -e bosh-1 -d cf deploy cf-deployment/cf-deployment.yml \
   --vars-store cf-vars.yml \
