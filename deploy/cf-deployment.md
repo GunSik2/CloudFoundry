@@ -50,31 +50,45 @@ $ bosh -e bosh-1 login
 # Query the Director for more info
 $ bosh -e bosh-1 env
 ```
+## bosh-lite 
+- cloud config
+```
+$ bosh -e bosh-1 update-cloud-config ~/workspace/cf-deployment/iaas-support/bosh-lite/cloud-config.yml
+```
+- deploy cf
+```
+bosh -e bosh-1 upload-stemcell https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3445.2
 
-## Deploy Full CF
-- Update cloud config
+bosh -e bosh-1 -d cf deploy ~/workspace/cf-deployment/cf-deployment.yml \
+  -o ~/workspace/cf-deployment/operations/bosh-lite.yml \
+  --vars-store cf-vars.yml \
+  -v system_domain=$SYSTEM_DOMAIN
+```
+
+## Full cf
+- cloud config
 ``` 
 $ bosh -e bosh-1 update-cloud-config cf-deployment/aws/cloud-config.yml \
   -v az1=us-east-1a -v internal_cidr_z1=172.31.0.0/20  -v internal_gw_z1=172.31.0.1  -v subnet_id_z1=subnet-4f26d839 \
   -v az2=us-east-1b -v internal_cidr_z2=172.31.16.0/20 -v internal_gw_z2=172.31.16.1  -v subnet_id_z2=subnet-78425221 \
   -v az3=us-east-1d -v internal_cidr_z3=172.31.48.0/20 -v internal_gw_z3=172.31.48.1  -v subnet_id_z3=subnet-203a390b    
 ```
-- Deploy CF
+- deploy cf on single zone 
 ```
 $ bosh -e bosh-1 upload-stemcell https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3445.2
-
-## Deploy on Multiple AZ
-$ export SYSTEM_DOMAIN=lite.paasxpert.com
-$ bosh -e bosh-1 -d cf deploy cf-deployment/cf-deployment.yml \
-  --vars-store cf-vars.yml \
-  -v system_domain=$SYSTEM_DOMAIN
-
-## Deploy on Single AZ
 $ bosh -e bosh-1 -d cf deploy cf-deployment/cf-deployment.yml \
   --vars-store cf-vars.yml \
   -v system_domain=$SYSTEM_DOMAIN \
   -o cf-deployment/aws/single-haproxy.yml \
   -o cf-deployment/operations/scale-to-one-az.yml
+```
+- deploy cf on multiple zone
+```
+$ bosh -e bosh-1 upload-stemcell https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3445.2
+$ export SYSTEM_DOMAIN=lite.paasxpert.com
+$ bosh -e bosh-1 -d cf deploy cf-deployment/cf-deployment.yml \
+  --vars-store cf-vars.yml \
+  -v system_domain=$SYSTEM_DOMAIN
 ```
 
 - Download manifest
